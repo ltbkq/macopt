@@ -1,0 +1,255 @@
+# macopt — .vmx key whitelist seed (DESIGN §4.5)
+#
+# Hand-curated. One entry per line; lines starting with "#" are comments.
+# NEVER paste a `strings` dump of a VMware binary here (proprietary derivative,
+# risk R16). Add a key only after verifying it exists on an installed build,
+# and record where it came from in the `# source:` comment of its section.
+#
+# Patterns: `%d` / `%u` match digits, `%s` matches a key-charset fragment, so
+# `ethernet%d.virtualDev` also accepts `ethernet0.virtualDev`.
+#
+# Complements `keys.scan()` (runtime, read-only, never committed).
+
+# source: keys written by macopt's own profiles — docs/DESIGN.md §4.7 (topology),
+#         §4.9 (timing/gfxnet), §4.11 (identity), §12.2 (guestOS); each entry
+#         cross-checked against vmware-vmx on Workstation 26.0.1.
+numvcpus
+cpuid.coresPerSocket
+numa.autosize.vcpu.maxPerVirtualNode
+numa.autosize.cookie
+numa.autosize.once
+numa.vcpu.maxPerVirtualNode
+numa.vcpu.coresPerNode
+numa.allowHotadd
+vhv.enable
+vhv.xapic.enable
+vpmc.enable
+hypervisor.cpuid.v0
+hypervisor.cpuid.v1
+hypervisor.cpuid.v2
+hypervisor.cpuid.v3
+hypervisor.cpuid.v4
+hypervisor.cpuid.v5
+tools.syncTime
+tools.upgrade.policy
+hpet0.present
+mks.enable3d
+svga.maxTextureSize
+svga.vramSize
+svga.autodetect
+svga.graphicsMemoryKB
+svga.present
+ethernet%d.virtualDev
+ethernet%d.present
+ethernet%d.connectionType
+ethernet%d.networkName
+ethernet%d.addressType
+ethernet%d.generatedAddress
+ethernet%d.generatedAddressOffset
+ethernet%d.checkMACAddress
+ethernet%d.wakeOnPcktRcv
+ethernet%d.linkStatePropagation.enable
+guestOS
+displayName
+annotation
+smc.present
+smc.version
+hw.model
+hw.model.reflectHost
+board-id
+board-id.reflectHost
+serialNumber
+serialNumber.reflectHost
+smbios.reflectHost
+smbios.altAssetTag
+efi.nvram.var.ROM
+efi.nvram.var.ROM.reflectHost
+efi.nvram.var.MLB
+efi.nvram.var.MLB.reflectHost
+cpuid.brandString
+cpuid.family
+cpuid.model
+cpuid.stepping
+cpuid.inhibitDarwinMasks
+
+# source: docs/evidence/01-factcheck.md §3.1/§3.2 — existence verified with
+#         `grep -rl -a -F` across /usr/lib/vmware on Workstation 26.0.1.
+ulm.disableMitigations
+mks.gl.allowBlacklistedDrivers
+mks.enableMTLRenderer
+mks.enableGLBasicRenderer
+mks.enableGLPresentation
+mks.use3dRenderer
+mks.prefer3dRenderer
+mks.enableSoftwareRenderer
+mks.forceRenderer
+mks.enableDX11Renderer
+mks.enableDX12Renderer
+mks.enableVulkanRenderer
+svga.maxTextureSize16K
+svga.2DMaxTextureSize8K
+hypervisor.cpuid.v0.vbsBroken
+hypervisor.syncRefTsc
+
+# source: read-only key scan of /usr/lib/vmware/bin/vmware-vmx{,-debug,-stats},
+#         lib/libvmwarebase.so, bin/mksSandbox (Workstation 26.0.1 build 25688693).
+#         Curated subset of ordinary virtual-machine configuration keys.
+memsize
+uuid.bios
+uuid.location
+firmware
+config.version
+virtualHW.version
+cleanShutdown
+acpi.present
+scsi%d.present
+scsi%d.virtualDev
+scsi%d:%d.present
+scsi%d:%d.fileName
+sata%d.present
+sata%d.pciSlotNumber
+sata%d:%d.present
+sata%d:%d.fileName
+ide%d:%d.present
+ide%d:%d.fileName
+nvme%d.present
+nvme%d.virtualDev
+pciBridge%d.present
+pciBridge%d.virtualDev
+pciBridge%d.functions
+floppy%d.present
+floppy%d.fileName
+serial%d.present
+serial%d.fileType
+parallel%d.present
+parallel%d.fileType
+sound.present
+sound.virtualDev
+sound.autodetect
+usb.present
+usb_xhci.present
+ehci.present
+vmci0.present
+log.fileName
+disk.EnableUUID
+sched.mem.min
+sched.mem.max
+snapshot.num
+efi.bootOrder
+efi.quickBoot.enabled
+efi.use64
+efi.serialconsole.enabled
+guestinfo.%s
+guestinfo.ip
+
+# source: same read-only scan — monitor/feature switches referenced by
+#         docs/DESIGN.md §4.8/§4.9 (values are documented there with risks).
+monitor_control.disable_tsc_offsetting
+monitor_control.disable_tsc_scaling
+monitor_control.disable_flexpriority
+monitor_control.disable_mmu_largepages
+monitor_control.disable_apic_timer_handler
+monitor_control.disable_hostedIPI
+monitor_control.disable_hw_mbx
+monitor_control.enable_vmcs_shadow_opt
+monitor_control.force_x2apic
+monitor_control.debugctl_lbr
+monitor_control.log_vmsample
+featureCompat.enable
+
+# source: vmware-vmx CPUID name registry (docs/evidence/02-cpuid-review.md §1.1,
+#         270 `cpuid.<NAME>` keys). Only spellings observed in the binary are
+#         listed: upper-case feature names dominate, a few lower-case ones also
+#         exist. Lower-case community spellings such as `cpuid.ss` / `cpuid.ds`
+#         are NOT confirmed — that is open test item T5 (key case sensitivity).
+cpuid.SSE3
+cpuid.SSSE3
+cpuid.SSE41
+cpuid.SSE42
+cpuid.SSE4A
+cpuid.AES
+cpuid.PCLMULQDQ
+cpuid.POPCNT
+cpuid.XSAVE
+cpuid.XSAVEOPT
+cpuid.XSAVEC
+cpuid.XSAVES
+cpuid.AVX
+cpuid.AVX2
+cpuid.AVX512F
+cpuid.AVX512BW
+cpuid.AVX512VL
+cpuid.FMA
+cpuid.F16C
+cpuid.RDRAND
+cpuid.RDSEED
+cpuid.MOVBE
+cpuid.PCID
+cpuid.MWAIT
+cpuid.VMX
+cpuid.SS
+cpuid.DS
+cpuid.SMX
+cpuid.HLE
+cpuid.RTM
+cpuid.BMI1
+cpuid.BMI2
+cpuid.ADX
+cpuid.SHA
+cpuid.PKU
+cpuid.UMIP
+cpuid.IBRS
+cpuid.IBPB
+cpuid.STIBP
+cpuid.SSBD
+cpuid.CET_IBT
+cpuid.CMPXCHG16B
+cpuid.LM
+cpuid.NX
+cpuid.PAT
+cpuid.PSN
+cpuid.WAITPKG
+cpuid.SERIALIZE
+cpuid.VAES
+cpuid.VPCLMULQDQ
+cpuid.AMX_INT8
+cpuid.AMX_TILE
+cpuid.AMX_BF16
+cpuid.FAMILY
+cpuid.MODEL
+cpuid.STEPPING
+cpuid.lm
+cpuid.mwait
+cpuid.mpx
+cpuid.invpcid
+cpuid.lahf64
+cpuid.amd
+cpuid.intel
+cpuid.fp_segment_zero
+cpuid.numSMT
+cpuid.maxVCPUs
+cpuid.enableMWAIT
+cpuid.enableTSX
+cpuid.enableIBT
+cpuid.enableCPUIDFaulting
+cpuid.enableMPX
+cpuid.supportsMulticore
+cpuid.supportsAMDExtendedTopology
+cpuid.maxCacheLevel
+cpuid.disable_apicExtRegs
+
+# ---------------------------------------------------------------------------
+# Known NON-EXISTENT keys. Verified zero hits across /usr/lib/vmware on
+# Workstation 26.0.1 (docs/evidence/01-factcheck.md §3.1, plus re-checks made
+# while curating this file). They must never enter the whitelist — writing
+# them is the "silently ignored key" failure mode this table exists to stop.
+#
+#   mks.g3d.maxTextureSize            (real key: svga.maxTextureSize)
+#   mks.enableGLRenderer              (real key: mks.enableGLBasicRenderer)
+#   vmotion.svga.maxTextureSize       (present in a local .vmx, zero hits in
+#                                      any installed binary → unproven)
+#   monitor_control.enable_fullcpuid   (community-only, zero hits → open test
+#                                      item T8 before macopt may ever write it)
+#   tools.afterPowerOn / tools.afterResume / tools.beforeGuestSuspend /
+#   tools.beforeGuestShutdown          (documented upstream, zero hits here)
+# ---------------------------------------------------------------------------
