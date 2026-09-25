@@ -1,0 +1,8 @@
+2026-09-25T11:27:32.558Z -INFO vmware-vmx 1234 [vmx threadName="vmx"] Log for VMware Workstation pid=1234 version=26.0.1 build=25688693 option=Release
+2026-09-25T11:27:32.642Z -INFO vmware-vmx 1234 [vmx threadName="vmx"] DICT                   guestOS = "darwin24-64"
+2026-09-25T11:27:32.642Z -INFO vmware-vmx 1234 [vmx threadName="vmx"] DICT                  numvcpus = "8"
+2026-09-25T11:27:32.642Z -INFO vmware-vmx 1234 [vmx threadName="vmx"] DICT      cpuid.coresPerSocket = "8"
+2026-09-25T11:27:32.642Z -INFO vmware-vmx 1234 [vmx threadName="vmx"] DICT            tools.syncTime = "FALSE"
+2026-09-25T11:27:32.642Z -INFO vmware-vmx 1234 [vmx threadName="vmx"] Powering on guestOS 'darwin24-64' using the configuration for 'darwin24-64'.
+2026-09-25T11:27:32.659Z -INFO vmware-vmx 1234 [vmx threadName="vmx"] vmm-vcpus:  8
+2026-09-25T11:27:34.258Z -INFO vmware-vmx 1234 [vmx threadName="vmx"] OvhdMem OvhdUser_LocalApic                  :       8      8      - |      8      8      -

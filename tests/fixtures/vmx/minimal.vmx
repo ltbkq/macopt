@@ -1,0 +1,6 @@
+.encoding = "UTF-8"
+guestOS = "darwin24-64"
+numvcpus = "4"
+cpuid.coresPerSocket = "4"
+vhv.enable = "FALSE"
+smc.present = "TRUE"

@@ -1,0 +1,61 @@
+2026-09-25T11:27:32.558Z -INFO vmware-vmx 1234 [vmx threadName="vmx"] Log for VMware Workstation pid=1234 version=26.0.1 build=25688693 option=Release
+2026-09-25T11:27:32.607Z -INFO vmware-vmx 1234 [vmx threadName="vmx"] hostCPUID vendor: GenuineIntel
+2026-09-25T11:27:32.607Z -INFO vmware-vmx 1234 [vmx threadName="vmx"] hostCPUID family: 0x6 model: 0xba stepping: 0x2
+2026-09-25T11:27:32.607Z -INFO vmware-vmx 1234 [vmx threadName="vmx"] hostCPUID codename: Raptor Lake H/P/PX/U
+2026-09-25T11:27:32.607Z -INFO vmware-vmx 1234 [vmx threadName="vmx"] hostCPUID name: 13th Gen Intel(R) Core(TM) i7-13620H
+2026-09-25T11:27:32.607Z -INFO vmware-vmx 1234 [vmx threadName="vmx"] hostCPUID level 00000000, 0: 0x00000020 0x756e6547 0x6c65746e 0x49656e69
+2026-09-25T11:27:32.607Z -INFO vmware-vmx 1234 [vmx threadName="vmx"] hostCPUID level 00000001, 0: 0x000b06a2 0x11800800 0x7ffafbff 0xbfebfbff
+2026-09-25T11:27:32.607Z -INFO vmware-vmx 1234 [vmx threadName="vmx"] hostCPUID level 00000015, 0: 0x00000002 0x00000098 0x0249f000 0x00000000
+2026-09-25T11:27:32.607Z -INFO vmware-vmx 1234 [vmx threadName="vmx"] hostCPUID level 00000016, 0: 0x00000b54 0x00001324 0x00000064 0x00000000
+2026-09-25T11:27:32.608Z -INFO vmware-vmx 1234 [vmx threadName="vmx"] CPUID[4] level 00000016, 0: 0x00000b54 0x00000e10 0x00000064 0x00000000
+2026-09-25T11:27:32.608Z -INFO vmware-vmx 1234 [vmx threadName="vmx"] CPUID[6] level 0000001f, 0: 0x00000001 0x00000001 0x00000100 0x00000030
+2026-09-25T11:27:32.608Z -INFO vmware-vmx 1234 [vmx threadName="vmx"] VMMon_GetkHzEstimate: Calculated 2918400 kHz
+2026-09-25T11:27:32.608Z -INFO vmware-vmx 1234 [vmx threadName="vmx"] TSC Hz estimates: vmmon 2918400000, cpuinfo 4641551000, cpufreq 4900000000 sysctlfreq 0. Using 2918400000 Hz
+2026-09-25T11:27:32.638Z -INFO vmware-vmx 1234 [vmx threadName="vmx"] libnuma.so found and in use.
+2026-09-25T11:27:32.638Z -INFO vmware-vmx 1234 [vmx threadName="vmx"] NUMA topology found.
+2026-09-25T11:27:32.638Z -INFO vmware-vmx 1234 [vmx threadName="vmx"] NUMA node 0: 31815MB, cpus 0x0000ffff 0x00000000 0x00000000 0x00000000
+2026-09-25T11:27:32.642Z -INFO vmware-vmx 1234 [vmx threadName="vmx"] DICT             hpet0.present = "TRUE"
+2026-09-25T11:27:32.642Z -INFO vmware-vmx 1234 [vmx threadName="vmx"] DICT               smc.present = "TRUE"
+2026-09-25T11:27:32.642Z -INFO vmware-vmx 1234 [vmx threadName="vmx"] DICT                  firmware = "efi"
+2026-09-25T11:27:32.642Z -INFO vmware-vmx 1234 [vmx threadName="vmx"] DICT                   guestOS = "darwin24-64"
+2026-09-25T11:27:32.642Z -INFO vmware-vmx 1234 [vmx threadName="vmx"] DICT            tools.syncTime = "FALSE"
+2026-09-25T11:27:32.642Z -INFO vmware-vmx 1234 [vmx threadName="vmx"] DICT               displayName = "<vm-name>"
+2026-09-25T11:27:32.642Z -INFO vmware-vmx 1234 [vmx threadName="vmx"] DICT                    nvram = "<vm-name>.nvram"
+2026-09-25T11:27:32.642Z -INFO vmware-vmx 1234 [vmx threadName="vmx"] DICT                  numvcpus = "12"
+2026-09-25T11:27:32.642Z -INFO vmware-vmx 1234 [vmx threadName="vmx"] DICT      cpuid.coresPerSocket = "12"
+2026-09-25T11:27:32.642Z -INFO vmware-vmx 1234 [vmx threadName="vmx"] DICT numa.autosize.vcpu.maxPerVirtualNode = "8"
+2026-09-25T11:27:32.642Z -INFO vmware-vmx 1234 [vmx threadName="vmx"] DICT      numa.autosize.cookie = "120122"
+2026-09-25T11:27:32.642Z -INFO vmware-vmx 1234 [vmx threadName="vmx"] DICT toolsInstallManager.lastInstallError = "21004"
+2026-09-25T11:27:32.642Z -INFO vmware-vmx 1234 [vmx threadName="vmx"] DICT          sata0:0.fileName = "/home/<user>/vmware/<vm-name>/disk.vmdk"
+2026-09-25T11:27:32.642Z -INFO vmware-vmx 1234 [vmx threadName="vmx"] DICT          sata0:1.fileName = "/mnt/<mount>/iso/<image>.iso"
+2026-09-25T11:27:32.642Z -INFO vmware-vmx 1234 [vmx threadName="vmx"] DICT     ethernet0.address = "<mac>"
+2026-09-25T11:27:32.642Z -INFO vmware-vmx 1234 [vmx threadName="vmx"] Powering on guestOS 'darwin24-64' using the configuration for 'darwin24-64'.
+2026-09-25T11:27:32.642Z -INFO vmware-vmx 1234 [vmx threadName="vmx"] ToolsISO: Selected Tools ISO 'darwin.iso' for 'darwin24-64' guest.
+2026-09-25T11:27:32.656Z -INFO vmware-vmx 1234 [vmx threadName="vmx"] numa: coresPerSocket = 12 maxVcpusPerVPD = 8
+2026-09-25T11:27:32.659Z -INFO vmware-vmx 1234 [vmx threadName="vmx"] vmm-vcpus:  12
+2026-09-25T11:27:32.663Z -INFO vmware-vmx 1234 [vmx threadName="vmx"] NumVCPUs 12
+2026-09-25T11:28:14.611Z -INFO vmware-vmx 1234 [vcpu-0 threadName="vcpu-0"] Tools: Tools heartbeat timeout.
+2026-09-25T11:34:01.801Z -INFO vmware-vmx 1234 [vcpu-0 threadName="vcpu-0"] Vix: [guestCommands.c:2002]: Error VIX_E_TOOLS_NOT_RUNNING in VMAutomationTranslateGuestRpcError(): A guest cmd cannot be sent because the connection to the guest was closed; giving up, op=62.
+2026-09-25T11:27:34.255Z -INFO vmware-vmx 1234 [vmx threadName="vmx"] Capability Found: cpuid.sse42 = 1
+2026-09-25T11:27:34.255Z -INFO vmware-vmx 1234 [vmx threadName="vmx"] Capability Found: cpuid.aes = 1
+2026-09-25T11:27:34.255Z -INFO vmware-vmx 1234 [vmx threadName="vmx"] Capability Found: cpuid.xsave = 1
+2026-09-25T11:27:34.255Z -INFO vmware-vmx 1234 [vmx threadName="vmx"] Capability Found: cpuid.avx2 = 1
+2026-09-25T11:27:34.254Z -INFO vmware-vmx 1234 [vmx threadName="vmx"] guest vs. host CPUID guest vendor: GenuineIntel
+2026-09-25T11:27:34.254Z -INFO vmware-vmx 1234 [vmx threadName="vmx"] guest vs. host CPUID guest family: 0x6 model: 0x4e stepping: 0x3
+2026-09-25T11:27:34.254Z -INFO vmware-vmx 1234 [vmx threadName="vmx"] guest vs. host CPUID *host family: 0x6 model: 0xba stepping: 0x2
+2026-09-25T11:27:34.254Z -INFO vmware-vmx 1234 [vmx threadName="vmx"] guest vs. host CPUID guest codename: Skylake-Y
+2026-09-25T11:27:34.254Z -INFO vmware-vmx 1234 [vmx threadName="vmx"] guest vs. host CPUID *host codename: Raptor Lake H/P/PX/U
+2026-09-25T11:27:34.254Z -INFO vmware-vmx 1234 [vmx threadName="vmx"] guest vs. host CPUID guest name: 13th Gen Intel(R) Core(TM) i7-13620H
+2026-09-25T11:27:34.254Z -INFO vmware-vmx 1234 [vmx threadName="vmx"] guest vs. host CPUID       level eaxIn, ecxIn:        eax        ebx        ecx        edx
+2026-09-25T11:27:34.254Z -INFO vmware-vmx 1234 [vmx threadName="vmx"] guest vs. host CPUID guest level 00000000,  0: 0x00000020 0x756e6547 0x6c65746e 0x49656e69
+2026-09-25T11:27:34.254Z -INFO vmware-vmx 1234 [vmx threadName="vmx"] guest vs. host CPUID guest level 00000001,  0: 0x000406e3 0x00100800 0xf7fa322b 0x1f8bfbff
+2026-09-25T11:27:34.254Z -INFO vmware-vmx 1234 [vmx threadName="vmx"] guest vs. host CPUID *host level 00000001,  0: 0x000b06a2 0x11800800 0x7ffafbff 0xbfebfbff
+2026-09-25T11:27:34.254Z -INFO vmware-vmx 1234 [vmx threadName="vmx"] guest vs. host CPUID guest level 00000007,  0: 0x00000002 0x219c27eb 0x9840078c 0xbc004410
+2026-09-25T11:27:34.254Z -INFO vmware-vmx 1234 [vmx threadName="vmx"] guest vs. host CPUID *host level 00000007,  0: 0x00000002 0x239c27eb 0x984007bc 0xfc18c410
+2026-09-25T11:27:34.254Z -INFO vmware-vmx 1234 [vmx threadName="vmx"] guest vs. host CPUID guest level 00000015,  0: 0x00000000 0x00000000 0x00000000 0x00000000
+2026-09-25T11:27:34.254Z -INFO vmware-vmx 1234 [vmx threadName="vmx"] guest vs. host CPUID *host level 00000015,  0: 0x00000002 0x00000098 0x0249f000 0x00000000
+2026-09-25T11:27:34.254Z -INFO vmware-vmx 1234 [vmx threadName="vmx"] guest vs. host CPUID guest level 00000016,  0: 0x00000000 0x00000000 0x00000000 0x00000000
+2026-09-25T11:27:34.254Z -INFO vmware-vmx 1234 [vmx threadName="vmx"] guest vs. host CPUID *host level 00000016,  0: 0x00000b54 0x00001324 0x00000064 0x00000000
+2026-09-25T11:27:34.254Z -INFO vmware-vmx 1234 [vmx threadName="vmx"] guest vs. host CPUID guest level 40000000,  0: 0x40000010 0x61774d56 0x4d566572 0x65726177
+2026-09-25T11:27:34.254Z -INFO vmware-vmx 1234 [vmx threadName="vmx"] guest vs. host CPUID guest level 80000001,  0: 0x00000000 0x00000000 0x00000121 0x2c100800
+2026-09-25T11:27:34.258Z -INFO vmware-vmx 1234 [vmx threadName="vmx"] OvhdMem OvhdUser_LocalApic                  :      12     12      - |     12     12      -
