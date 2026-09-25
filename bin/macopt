@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+# Run macopt straight from a source checkout (no install step required).
+set -euo pipefail
+here="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+if [ -d "${here}/src" ]; then
+  PYTHONPATH="${here}/src${PYTHONPATH:+:${PYTHONPATH}}" exec python3 -m macopt.cli "$@"
+fi
+exec python3 -m macopt.cli "$@"

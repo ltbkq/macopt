@@ -1,0 +1,72 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "macopt"
+version = "0.1.0"
+description = "Optimize VMware Workstation macOS guests: audited .vmx profiles, CPUID guardrails, host CPU scheduling and runtime verification. Complements (never replaces) the Unlocker."
+readme = "README.md"
+license = { text = "MIT" }
+requires-python = ">=3.11"
+authors = [{ name = "macopt contributors" }]
+keywords = [
+    "vmware",
+    "workstation",
+    "macos",
+    "guest",
+    "vmx",
+    "cpuid",
+    "unlocker",
+    "verification",
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Environment :: Console",
+    "Intended Audience :: System Administrators",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: POSIX :: Linux",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: System :: Emulators",
+    "Topic :: Utilities",
+]
+# Deliberately zero runtime dependencies: the tool must run on a stock host
+# with nothing but CPython (>= 3.11, for tomllib).
+dependencies = []
+
+[project.optional-dependencies]
+dev = ["pytest>=7", "ruff>=0.4"]
+
+[project.scripts]
+macopt = "macopt.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/ltbkq/macopt"
+Repository = "https://github.com/ltbkq/macopt"
+Issues = "https://github.com/ltbkq/macopt/issues"
+Documentation = "https://github.com/ltbkq/macopt/blob/main/docs/DESIGN.md"
+
+[tool.setuptools]
+package-dir = { "" = "src" }
+include-package-data = true
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+macopt = ["data/*.txt"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP", "B"]
+ignore = ["E501"]

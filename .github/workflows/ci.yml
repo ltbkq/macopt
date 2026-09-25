@@ -1,0 +1,67 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: py${{ matrix.python-version }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11", "3.12", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install (dev extras)
+        run: python -m pip install --quiet -e ".[dev]"
+
+      - name: Lint
+        run: ruff check src tests scripts
+
+      - name: Unit tests (unittest)
+        run: python -m unittest discover -s tests -v
+
+      - name: Unit tests (pytest parity)
+        run: pytest -q
+
+      - name: CLI smoke test
+        run: |
+          macopt --help
+          bin/macopt --help
+          python -c "import macopt, macopt.cli; print(macopt.__version__)"
+
+  hygiene:
+    name: repo hygiene
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Secret scan (no credentials may ever ship)
+        run: python scripts/secret_scan.py .
+
+      - name: Evidence sanitization must be idempotent
+        run: python scripts/sanitize_evidence.py --check
+
+      - name: Guard rails (no VMware paths written, no banned keys)
+        run: python scripts/guardrails.py
+
+      - name: Package build
+        run: |
+          python -m pip install --quiet build
+          python -m build

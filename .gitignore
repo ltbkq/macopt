@@ -1,0 +1,42 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+.venv/
+venv/
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Local test output
+*.tmp
+*.bak
+.state/
+
+# Host-specific artefacts: never commit machine-local logs, fixtures or dumps.
+# Regenerate them locally with:  python3 scripts/make_fixtures.py <vmware.log>
+/fixtures/host/
+/tmp/
+vmx-strings*.txt
+*-debug-strings.txt
+
+# Real VM logs and config are excluded wholesale; only sanitized excerpts
+# under tests/fixtures/ (committed on purpose) may be tracked.
+*.log
+!tests/fixtures/**/*.log
+*.vmx.local
+
+# Secrets / credentials (defence in depth: nothing in this repo may contain them)
+*.pem
+*.key
+.env
+credentials.json
+
+# Editors / OS
+.idea/
+.vscode/
+.DS_Store
