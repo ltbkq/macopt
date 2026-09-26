@@ -67,5 +67,33 @@ and the project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.
   text, and is proven by positive *and* negative tests.
 - **Home-path redaction.** `scripts/sanitize_evidence.py` only matched a home
   path when a `/` followed it, so a value ending a line escaped redaction.
+- **Non-existent keys could be whitelisted by a scan pattern.** The seed file
+  declared eight keys (including `mks.g3d.maxTextureSize` and
+  `vmotion.svga.maxTextureSize`) as "must never enter the whitelist", but
+  nothing enforced it: the installed binary really carries the broad pattern
+  `vmotion.%s`, which matched `vmotion.svga.maxTextureSize` and made
+  `is_known()` answer `True`, and `monitor_control.enable_fullcpuid` rode a
+  neighbouring pattern — both of them then passed `check` S10 and were
+  writable by `apply`. The section is now machine-read
+  (`keys.load_nonexistent()`), and the deny-list wins over the seed, index
+  patterns and runtime scan alike.
+- **Every stock VM tripped S10.** 26 of the 132 keys in a Workstation-created
+  `.vmx` were reported as "outside the whitelist": `pciBridge%d.pciSlotNumber`,
+  `usb_xhci:%d.*`, `sata|scsi|ide %d:%d.redo`, `nvram`, `extendedConfigFile`
+  and `softPowerOff` are assembled from format fragments inside the GUI, so no
+  binary scan can produce them as one token. They are curated into the seed
+  now (key names only), and `check` on that same VM reports a single remaining
+  key — the deliberately denied `vmotion.svga.maxTextureSize`.
+- **The precondition check read the caller's own wrapper as a running guest.**
+  Only our own pid was skipped, so `timeout 300 macopt apply <vmx>` (and any
+  `make` target, editor run task or CI step that re-executes us with the same
+  argv) was refused with "process … references this .vmx", quoting its own
+  command line. The scan now skips our pid **and every ancestor** (bounded
+  64-hop walk of `/proc/<pid>/stat`), while a real `vmware-vmx` process is
+  still refused. Found by running the end-to-end write loop against a copy of
+  a real `.vmx`.
+- **Misleading `restore` JSON.** A completed restore reported
+  `"would_restore": true` alongside `"dry_run": false`, so a JSON consumer
+  would print "nothing happened" after an actual rollback.
 
 [Unreleased]: https://github.com/ltbkq/macopt/compare/HEAD...HEAD

@@ -137,6 +137,39 @@ def _change_for(doc: object, param: Param) -> Change:
 # --------------------------------------------------------------------------- #
 
 
+def _caller_lineage(proc: Path) -> set[int]:
+    """Our pid plus every ancestor pid, bounded at 64 hops.
+
+    Wrappers re-execute us with the *same* argv — ``timeout 300 macopt apply
+    <vmx>``, ``make``, an editor's run task, a CI step — so their
+    ``/proc/<pid>/cmdline`` carries the ``.vmx`` path too. Skipping only our
+    own pid read those wrappers as a running guest and refused every
+    non-interactive run (observed: ``timeout 300 python3 -m macopt.cli apply
+    …`` blocked with "process 575333 references this .vmx", quoting itself).
+    No ancestor can be the guest we are about to edit: VMware does not spawn
+    macopt.
+    """
+    pids: set[int] = set()
+    pid = os.getpid()
+    for _ in range(64):
+        if pid in pids or pid <= 0:
+            break
+        pids.add(pid)
+        if pid == 1:
+            break
+        try:
+            stat = (proc / str(pid) / "stat").read_text(encoding="utf-8", errors="replace")
+        except OSError:
+            break  # not visible here (or no injected proc): stop at our own pid
+        try:
+            # "/proc/<pid>/stat" is "pid (comm) state ppid …"; comm may itself
+            # contain spaces and parens, so parse after the last ")".
+            pid = int(stat.rsplit(")", 1)[1].split()[1])
+        except (IndexError, ValueError):
+            break
+    return pids
+
+
 def check_precondition(vmx_path: str | Path, *, proc_root: str | Path = "/proc") -> list[str]:
     """Return the reasons the ``.vmx`` must not be written right now.
 
@@ -149,8 +182,9 @@ def check_precondition(vmx_path: str | Path, *, proc_root: str | Path = "/proc")
        path of the ``.vmx`` (read-only scan; ``proc_root`` is injectable so
        tests never touch the real ``/proc``).
 
-    Our own pid is skipped: ``macopt apply <vmx>`` legitimately carries the
-    path in its own argv.
+    Our own pid **and every ancestor of it** is skipped: ``macopt apply
+    <vmx>`` legitimately carries the path in its own argv, and so does any
+    wrapper that launched us with the same argv.
     """
     target = Path(os.path.abspath(os.fspath(vmx_path)))
     reasons: list[str] = []
@@ -177,9 +211,9 @@ def check_precondition(vmx_path: str | Path, *, proc_root: str | Path = "/proc")
             entries = list(proc.iterdir())
         except OSError:
             entries = []
-        own_pid = os.getpid()
+        own_pids = _caller_lineage(proc)
         for entry in entries:
-            if not entry.name.isdigit() or int(entry.name) == own_pid:
+            if not entry.name.isdigit() or int(entry.name) in own_pids:
                 continue
             try:
                 raw = (entry / "cmdline").read_bytes()

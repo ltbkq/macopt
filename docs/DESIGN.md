@@ -288,9 +288,21 @@ known_keys() =
 缓存键 = 各二进制 (path, size, mtime, sha256 前 16 字节)，任一变化即失效
 ```
 
-`is_known(key) -> bool`：先查 `cpuid` 格式化串是否可展开该 key（`cpuid.<leaf>.<reg>` / `cpuid.<leaf>.<subleaf>.<reg>` / `.amd` 变体），再查集合。`allow_unknown_keys=True` 时降级为 WARN。
+`is_known(key) -> bool` 按**固定优先级**判定：
 
-**合规约束**：扫描结果只在**运行时**产生并缓存在用户 state 目录；仓库**不提交**任何从 VMware 二进制导出的字符串转储（专有代码衍生物），只提交人工整理的 key 名单。
+```
+0. 黑名单命中 → 拒绝      # 种子表 `# non-existent:` 区，keys.load_nonexistent()
+                          # 优先级高于一切正向来源（种子/索引模式/运行时扫描）
+1. cpuid 格式化串可展开    # cpuid.<leaf>.<reg> / <leaf>.<subleaf>.<reg> / .amd 变体
+2. 种子表 ∪ 扫描缓存       # 精确相等，或 %d/%u/%s 索引模式匹配
+其余 → 拒绝；allow_unknown_keys=True 时降级为 WARN
+```
+
+> **为什么黑名单必须优先**：二进制里实测存在宽泛模式 `vmotion.%s`，它能匹配"已证实不存在"的 `vmotion.svga.maxTextureSize`，使 `is_known()` 说 True——种子表注释在拒绝、代码在放行。同理 `monitor_control.enable_fullcpuid` 会搭邻居模式的便车。纯散文约定无法阻止这一层，必须由代码强制（`tests/test_keys.py::test_deny_list_beats_a_matching_scan_pattern`）。
+
+> **为什么种子表要收录"VMware 自己写入的 key"**：`pciBridge%d.pciSlotNumber`、`usb_xhci:%d.{present,deviceType,port,parent,speed}`、`sata|scsi|ide %d:%d.redo`、`nvram`、`extendedConfigFile`、`softPowerOff` 这些族由 GUI 内部的格式片段拼装，二进制扫描永远产不出完整 token。不收录它们，**任何一台由 Workstation 自己创建的虚拟机**都会 S10 误报——实测一台 darwin 客户机 132 个 key 中 26 个"白名单外"，全部来自这一族（key **名**收录，值与序列号一概不碰）。
+
+**合规约束**：扫描结果只在**运行时**产生并缓存在用户 state 目录；仓库**不提交**任何从 VMware 二进制导出的字符串转储（专有代码衍生物），只提交人工整理的 key 名单（含注释中的来源出处）。
 
 ### 4.6 写入目标与配置层级
 
@@ -454,6 +466,11 @@ class CpuIdProfile:
 ```
 pre: 目标 VM 未运行（无 <name>.vmx.lck 且无进程 cmdline 命中该 vmx 路径）
      且 VMware GUI 未打开该 VM
+     进程扫描跳过**自身 pid 及其全部祖先链**（≤64 跳，读 /proc/<pid>/stat 回溯）：
+     `timeout 300 macopt apply <vmx>`、`make`、编辑器运行任务、CI 步骤都会以**相同
+     argv** 复制本命令，其 cmdline 同样含 vmx 路径；只跳自身 pid 会把包装进程当成
+     "正在运行的虚拟机"，让每一次非交互 apply 都被拒绝（实测）。祖先不可能是待编辑的
+     客户机——VMware 不会拉起 macopt。
 backup.create() → state/backups/<vm-slug>/<utc-timestamp>-<sha8>/{<name>.vmx, manifest.json}
 写入 = Document.set() → write_atomic()（同目录临时文件 + fsync + os.replace + 还原 mode）
 post: 回读校验 sha256 与内存渲染一致；写 history.jsonl（append-only）
@@ -683,6 +700,8 @@ macopt guest-tools <vmx|vm-dir> [--json]
 ## 10. 待实测清单（T1–T8）
 
 > 通用口径：只改**副本**、每次只改一个变量、**必须冷启动**（CPUID 不热更新）、判定读 `guest vs. host CPUID` 的 guest/host diff。
+
+> **已在本机完成的部分**（Intel 宿主，只读套件 + `.vmx` 副本写循环，见 `docs/evidence/06-local-verification.md`）：`check` 对真实 `.vmx` **0 FAIL**（S10 暴露出的 26 项白名单误报已修正，收敛到 1 项即刻意拒绝的 `vmotion.svga.maxTextureSize`）；`verify` 对真实日志 **9 PASS / 1 WARN / 0 FAIL**（V6：guest `0x15`/`0x16` 全零，拿不到频率校准）；`apply → 二次 apply → restore` 在副本上字节级可逆。下表 T1–T8 需要**真实开关机观测 guest 行为**，本机（Intel + 不得改动真实虚拟机）无法替代，仍保持待办。
 
 | # | 问题 | 关键步骤 | 未完成时的限制 |
 |---|---|---|---|

@@ -3,6 +3,8 @@
 These documents are the four-way review of the original v2.0 feature draft,
 plus the consolidated verdict. `docs/DESIGN.md` is the direct descendant of
 that verdict: every correction in the table below is implemented there.
+`06-local-verification.md` is the later one: what the shipped tool actually
+did on a real host, and the four defects that run exposed.
 
 | File | Scope |
 |---|---|
@@ -11,6 +13,7 @@ that verdict: every correction in the table below is implemented there.
 | `02-cpuid-review.md` | CPUID masking mechanism, bit numbering, risk analysis, T1–T8 |
 | `03-cpu-tuning-module.md` | The missing CPU topology / scheduling / clock chapter (24-row parameter table) |
 | `04-verify-acceptance.md` | Five-state Unlocker detection, `verify` V0–V10, acceptance A–I, engineering checklist |
+| `06-local-verification.md` | Post-release run on a real host: read-only suite (`doctor` / `unlocker-status` / `detect-cpu` / `check` / `verify` / `keyscan` / `schedule plan`), byte-exact reversibility on a copy of a real `.vmx`, and the four defects that run found |
 
 ## Sanitization
 

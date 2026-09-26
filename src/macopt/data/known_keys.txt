@@ -239,17 +239,50 @@ cpuid.maxCacheLevel
 cpuid.disable_apicExtRegs
 
 # ---------------------------------------------------------------------------
+# source: keys that VMware Workstation 26.0.1 writes into a stock `.vmx`
+# itself — key names only, no values, no serials, no machine-specific data.
+# These families are assembled from format fragments inside the GUI, so a
+# binary scan never emits them as a single token: without them, every VM that
+# Workstation itself created trips S10 (observed on a real darwin guest:
+# 26 of 132 keys "outside the whitelist", all from this block).
+#
+#   pciBridge%d.pciSlotNumber                     bridge slot numbers
+#   usb_xhci:%d.{present,deviceType,port,parent,speed}
+#   sata%d:%d.redo / scsi%d:%d.redo / ide%d:%d.redo
+#   nvram, extendedConfigFile, softPowerOff
+# ---------------------------------------------------------------------------
+pciBridge%d.pciSlotNumber
+usb_xhci:%d.speed
+usb_xhci:%d.present
+usb_xhci:%d.deviceType
+usb_xhci:%d.port
+usb_xhci:%d.parent
+sata%d:%d.redo
+scsi%d:%d.redo
+ide%d:%d.redo
+nvram
+extendedConfigFile
+softPowerOff
+
+# ---------------------------------------------------------------------------
 # Known NON-EXISTENT keys. Verified zero hits across /usr/lib/vmware on
 # Workstation 26.0.1 (docs/evidence/01-factcheck.md §3.1, plus re-checks made
-# while curating this file). They must never enter the whitelist — writing
-# them is the "silently ignored key" failure mode this table exists to stop.
+# while curating this file). Writing any of them is the "silently ignored key"
+# failure mode this table exists to stop.
 #
-#   mks.g3d.maxTextureSize            (real key: svga.maxTextureSize)
-#   mks.enableGLRenderer              (real key: mks.enableGLBasicRenderer)
-#   vmotion.svga.maxTextureSize       (present in a local .vmx, zero hits in
-#                                      any installed binary → unproven)
-#   monitor_control.enable_fullcpuid   (community-only, zero hits → open test
-#                                      item T8 before macopt may ever write it)
-#   tools.afterPowerOn / tools.afterResume / tools.beforeGuestSuspend /
-#   tools.beforeGuestShutdown          (documented upstream, zero hits here)
+# Each `# non-existent: <key>` line is machine-read by keys.load_nonexistent()
+# and takes precedence over every positive source — seed, indexed pattern and
+# runtime scan alike. Prose alone was not enough: the binary really does
+# contain the broad pattern `vmotion.%s`, which matched
+# `vmotion.svga.maxTextureSize` and made is_known() say True for a key this
+# file declares unproven.
+#
+# non-existent: mks.g3d.maxTextureSize           (real key: svga.maxTextureSize)
+# non-existent: mks.enableGLRenderer             (real key: mks.enableGLBasicRenderer)
+# non-existent: vmotion.svga.maxTextureSize      (in a local .vmx, zero hits → unproven)
+# non-existent: monitor_control.enable_fullcpuid (community-only; T8 must settle it first)
+# non-existent: tools.afterPowerOn               (documented upstream, zero hits here)
+# non-existent: tools.afterResume                (documented upstream, zero hits here)
+# non-existent: tools.beforeGuestSuspend         (documented upstream, zero hits here)
+# non-existent: tools.beforeGuestShutdown        (documented upstream, zero hits here)
 # ---------------------------------------------------------------------------

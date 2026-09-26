@@ -476,6 +476,33 @@ class PreconditionTests(unittest.TestCase):
         self.add_process(os.getpid(), "macopt", "apply", str(self.vmx))
         self.assertEqual(writer.check_precondition(self.vmx, proc_root=self.proc), [])
 
+    def test_caller_wrapper_is_not_mistaken_for_a_running_guest(self) -> None:
+        # `timeout 300 macopt apply <vmx>` / `make` / a CI step re-executes us
+        # with the same argv, so the wrapper's cmdline carries the path too.
+        # Measured on a real host: the wrapper was reported as a running VM
+        # and every non-interactive apply was refused.
+        own = os.getpid()
+        parent = os.getppid()
+        entry = self.proc / str(own)
+        entry.mkdir()
+        (entry / "stat").write_text(f"{own} (python3) S {parent} 0 0 0 0 0 0\n")
+        self.add_process(parent, "timeout", "300", "macopt", "apply", str(self.vmx))
+        # ...while the real guest process must still be refused
+        self.add_process(4242, "/usr/lib/vmware/bin/vmware-vmx", str(self.vmx))
+        reasons = writer.check_precondition(self.vmx, proc_root=self.proc)
+        self.assertEqual(len(reasons), 1, reasons)
+        self.assertIn("4242", reasons[0])
+
+    def test_lineage_stops_on_a_malformed_stat_file(self) -> None:
+        own = os.getpid()
+        entry = self.proc / str(own)
+        entry.mkdir()
+        (entry / "stat").write_text("not a stat file\n")
+        self.add_process(4242, "/usr/lib/vmware/bin/vmware-vmx", str(self.vmx))
+        reasons = writer.check_precondition(self.vmx, proc_root=self.proc)
+        self.assertEqual(len(reasons), 1, reasons)
+        self.assertIn("4242", reasons[0])
+
     def test_relative_path_is_resolved_to_absolute(self) -> None:
         lock = Path(str(self.vmx) + ".lck")
         lock.mkdir()

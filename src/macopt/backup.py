@@ -468,7 +468,9 @@ class BackupManager:
             "backup_id": record.id,
             "target": str(self.vmx_path),
             "dry_run": False,
-            "would_restore": True,
+            # False on purpose: the restore already happened here. The dry-run
+            # branch above is the only one where it means "not yet done".
+            "would_restore": False,
             "sha256_before": current_sha,
             "sha256_after": rolled_back,
             "verified": True,

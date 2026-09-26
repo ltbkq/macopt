@@ -284,6 +284,11 @@ class RestoreTests(BackupTestBase):
 
         result = self.mgr.restore()
         self.assertEqual(result["backup_id"], newest.id)
+        # the restore actually ran: dry_run off and would_restore must not
+        # claim otherwise, or a JSON consumer would report "nothing happened"
+        self.assertFalse(result["dry_run"])
+        self.assertFalse(result["would_restore"])
+        self.assertTrue(result["verified"])
 
     def test_restore_dry_run_changes_nothing(self) -> None:
         record = self.mgr.create_snapshot()
@@ -295,6 +300,8 @@ class RestoreTests(BackupTestBase):
         result = self.mgr.restore(dry_run=True)
 
         self.assertTrue(result["dry_run"])
+        self.assertTrue(result["would_restore"])  # preview only: not done yet
+        self.assertNotIn("verified", result)
         self.assertEqual(result["sha256_before"], sha_before)
         self.assertEqual(result["sha256_after"], record.before_sha256)
         self.assertTrue(result["changes"])

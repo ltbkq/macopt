@@ -55,6 +55,7 @@ __all__ = [
     "expandable_cpuid_key",
     "is_known",
     "key_policy",
+    "load_nonexistent",
     "load_seed",
     "scan",
     "scan_cached",
@@ -212,12 +213,16 @@ def expandable_cpuid_key(key: str) -> bool:
 
 
 @lru_cache(maxsize=1)
-def _seed_frozen() -> frozenset[str]:
+def _seed_text() -> str:
     # Raises FileNotFoundError on a broken install: a silently empty whitelist
     # would reject (or worse, accept) everything, so fail loudly instead.
-    text = SEED_FILE.read_text(encoding="utf-8")
+    return SEED_FILE.read_text(encoding="utf-8")
+
+
+@lru_cache(maxsize=1)
+def _seed_frozen() -> frozenset[str]:
     keys: set[str] = set()
-    for raw in text.splitlines():
+    for raw in _seed_text().splitlines():
         line = raw.split("#", 1)[0].strip()
         if not line:
             continue
@@ -260,6 +265,34 @@ def load_seed() -> set[str]:
     return set(_seed_frozen())
 
 
+#: Marker for the deny-list section of the seed file (DESIGN §4.5).
+NONEXISTENT_PREFIX = "# non-existent: "
+
+
+@lru_cache(maxsize=1)
+def _nonexistent_frozen() -> frozenset[str]:
+    keys: set[str] = set()
+    for line in _seed_text().splitlines():
+        if not line.startswith(NONEXISTENT_PREFIX):
+            continue
+        # "# non-existent: <key>   (why)" -> "<key>"
+        body = line[len(NONEXISTENT_PREFIX) :].strip()
+        if body:
+            keys.add(body.split()[0])
+    return frozenset(keys)
+
+
+def load_nonexistent() -> frozenset[str]:
+    """Keys that must never be whitelisted, whatever the scan says.
+
+    Seed prose alone cannot enforce this: the installed binary carries the
+    broad pattern ``vmotion.%s``, which matches the *unproven*
+    ``vmotion.svga.maxTextureSize`` and would otherwise let it through
+    (measured on this host before this deny-list existed).
+    """
+    return _nonexistent_frozen()
+
+
 def _match_any(patterns: Sequence[re.Pattern[str]], key: str) -> bool:
     return any(p.match(key) for p in patterns)
 
@@ -267,11 +300,18 @@ def _match_any(patterns: Sequence[re.Pattern[str]], key: str) -> bool:
 def is_known(key: str, *, extra: set[str] | None = None) -> bool:
     """Decide whether ``key`` may be written into a ``.vmx``.
 
+    Order matters:
+
+    0. the deny-list of verified non-existent keys wins over *everything* —
+       a broad pattern from the binary scan must not be able to re-admit a
+       key this project has proven does not exist;
     ① ``cpuid`` format-string expansion (``expandable_cpuid_key``),
     ② the seed table ∪ ``extra`` (``extra`` is where the caller passes
        runtime scan results / config additions).
     """
     if not key or not isinstance(key, str):
+        return False
+    if key in _nonexistent_frozen():
         return False
     if expandable_cpuid_key(key):
         return True

@@ -118,10 +118,52 @@ class SeedTests(unittest.TestCase):
     def test_nonexistent_keys_are_documented_but_not_whitelisted(self) -> None:
         text = keys.SEED_FILE.read_text(encoding="utf-8")
         self.assertIn("Known NON-EXISTENT keys", text)
+        # machine-readable, not just prose: every documented key must be in
+        # the parsed deny-list or nothing would enforce the comment
+        denied = keys.load_nonexistent()
+        self.assertGreaterEqual(len(denied), len(KNOWN_NONEXISTENT))
         for key in KNOWN_NONEXISTENT:
             with self.subTest(key=key):
                 self.assertNotIn(key, keys.load_seed())
                 self.assertFalse(keys.is_known(key))
+
+    def test_deny_list_beats_a_matching_scan_pattern(self) -> None:
+        # Found on a real host: the installed binary carries the broad pattern
+        # `vmotion.%s`, which matched the *unproven*
+        # `vmotion.svga.maxTextureSize` and made is_known() answer True — the
+        # seed file was declaring it non-existent while the code admitted it.
+        extra = {"vmotion.%s", "monitor_control.%s", "tools.%s"}
+        for key in keys.load_nonexistent():
+            with self.subTest(key=key):
+                self.assertFalse(
+                    keys.is_known(key, extra=extra),
+                    f"{key} leaked through the deny-list via a scanned pattern",
+                )
+        # ...while the very same pattern must still admit a legitimate key
+        self.assertTrue(keys.is_known("vmotion.checkpointFBSize", extra=extra))
+
+    def test_keys_vmware_writes_itself_are_whitelisted(self) -> None:
+        # Workstation emits these into every stock `.vmx`; they are assembled
+        # from format fragments inside the GUI, so no binary scan produces
+        # them as one token. Before they were curated in, an untouched VM
+        # reported 26 "keys outside the whitelist" (S10 false positive).
+        for key in (
+            "pciBridge0.pciSlotNumber",
+            "pciBridge7.pciSlotNumber",
+            "usb_xhci:4.present",
+            "usb_xhci:6.deviceType",
+            "usb_xhci:7.speed",
+            "usb_xhci:7.parent",
+            "sata0:0.redo",
+            "sata0:2.redo",
+            "scsi0:0.redo",
+            "ide0:0.redo",
+            "nvram",
+            "extendedConfigFile",
+            "softPowerOff",
+        ):
+            with self.subTest(key=key):
+                self.assertTrue(keys.is_known(key), f"{key} missing from the whitelist")
 
 
 class IsKnownTests(unittest.TestCase):
